@@ -23,6 +23,8 @@ public class ReactiveJwtAuthenticationManager implements ReactiveAuthenticationM
     }
 
     public Mono<Authentication> authenticate(Authentication var1) {
+
+
         return Mono.justOrEmpty(this.provider.authenticate(var1));
     }
 }
