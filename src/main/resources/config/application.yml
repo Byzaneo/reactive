@@ -1,0 +1,20 @@
+info.project:
+  name: test
+
+server.port: 8080
+
+test:
+  my.property: example
+
+spring:
+  application.name: test
+  security:
+    oauth2:
+      resourceserver:
+        id: https://id.byzaneo.io
+        jwk:
+          jwk-set-uri: https://id.byzaneo.io/.well-known/jwks.json
+          issuer-uri: https://id.byzaneo.io/
+
+byzaneo:
+  billing.enabled: false
