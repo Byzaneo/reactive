@@ -1,6 +1,5 @@
 package io.byzaneo.test.config;
 
-import com.auth0.spring.security.api.authentication.PreAuthenticatedAuthenticationJsonWebToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -8,6 +7,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -27,14 +27,15 @@ public class ReactiveContextRepository implements ServerSecurityContextRepositor
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         String token = this.tokenFromRequest(exchange.getRequest());
-        Authentication authentication = PreAuthenticatedAuthenticationJsonWebToken.usingToken(token);
-        if (authentication != null) {
-            return this.authenticationManager.authenticate(authentication).map(auth -> {
-                final SecurityContext context = SecurityContextHolder.createEmptyContext();
-                context.setAuthentication(auth);
-                return context;
-            });
-//            TODO: log.debug("Found bearer token in request. Saving it in SecurityContext");
+        if (token != null) {
+            Authentication authentication = new BearerTokenAuthenticationToken(token);
+            if (authentication != null) {
+                return this.authenticationManager.authenticate(authentication).map(auth -> {
+                    final SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    context.setAuthentication(auth);
+                    return context;
+                });
+            }
         }
         return Mono.empty();
     }

@@ -1,24 +1,18 @@
 package io.byzaneo.test.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
-
-    @Value("${spring.security.oauth2.resourceserver.jwk.issuer-uri}")
-    private String issuerUri;
 
     @Autowired
     private ReactiveAuthenticationManager authenticationManager;
@@ -44,6 +38,7 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(reactiveContextRepository)
                 .authorizeExchange()
+                .pathMatchers("/api").permitAll()
                 .pathMatchers("/api/**").hasAuthority("home")
                 .anyExchange().permitAll();
 
@@ -65,9 +60,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public ReactiveJwtDecoder jwtDecoder() {
-        return ReactiveJwtDecoders.fromOidcIssuerLocation(issuerUri);
-    }
+//    @Bean
+//    public ReactiveJwtDecoder jwtDecoder() {
+//        return ReactiveJwtDecoders.fromOidcIssuerLocation(issuerUri);
+//    }
 
 }
